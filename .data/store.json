@@ -1,0 +1,444 @@
+{
+  "themes": [
+    {
+      "id": "theme-christmas-2026",
+      "name": "Winter Holidays & Cozy Christmas",
+      "description": "Festive holiday celebrations, warm interior textures, gift wrapping, and holiday gatherings for Q4 advertising campaigns.",
+      "season": "Winter",
+      "targetQuarter": "Q4",
+      "targetEventDate": "2026-12-25",
+      "category": "seasonal",
+      "isActive": true,
+      "createdAt": "2026-11-01T00:42:30.856Z",
+      "updatedAt": "2026-11-01T00:42:30.856Z"
+    },
+    {
+      "id": "theme-black-friday-2026",
+      "name": "Black Friday & Cyber Week E-Commerce",
+      "description": "High-energy shopping concepts, shopping bags, 3D retail sale banners, and tech discount promotions.",
+      "season": "Autumn",
+      "targetQuarter": "Q4",
+      "targetEventDate": "2026-11-27",
+      "category": "seasonal",
+      "isActive": true,
+      "createdAt": "2026-11-01T00:42:30.856Z",
+      "updatedAt": "2026-11-01T00:42:30.856Z"
+    },
+    {
+      "id": "theme-valentines-2027",
+      "name": "Valentine's Day Romance & Gifting",
+      "description": "Romantic culinary, heartfelt gift ideas, elegant floral arrangements, and confectionery for early spring commercial buyers.",
+      "season": "Winter",
+      "targetQuarter": "Q1",
+      "targetEventDate": "2027-02-14",
+      "category": "seasonal",
+      "isActive": true,
+      "createdAt": "2026-11-01T00:42:30.856Z",
+      "updatedAt": "2026-11-01T00:42:30.856Z"
+    },
+    {
+      "id": "theme-b2b-corporate",
+      "name": "B2B Corporate Teamwork & Fintech",
+      "description": "Modern diverse tech professionals collaborating in sustainable architecture offices with glassboards and laptops.",
+      "season": "All-Year",
+      "targetQuarter": "Evergreen",
+      "targetEventDate": null,
+      "category": "evergreen",
+      "isActive": true,
+      "createdAt": "2026-11-01T00:42:30.856Z",
+      "updatedAt": "2026-11-01T00:42:30.856Z"
+    },
+    {
+      "id": "theme-minimalist-copy-space",
+      "name": "Minimalist Tech Copy-Space & Mockups",
+      "description": "Clean aesthetic stone and concrete pedestals with intentional negative copy-space for marketing typography and product placement.",
+      "season": "All-Year",
+      "targetQuarter": "Evergreen",
+      "targetEventDate": null,
+      "category": "copy_space",
+      "isActive": true,
+      "createdAt": "2026-11-01T00:42:30.856Z",
+      "updatedAt": "2026-11-01T00:42:30.856Z"
+    },
+    {
+      "id": "theme-spring-bloom-2027",
+      "name": "Spring Bloom & Outdoor Wellness",
+      "description": "Fresh botanical landscapes, springtime gardening, and healthy lifestyle outdoor portraits.",
+      "season": "Spring",
+      "targetQuarter": "Q2",
+      "targetEventDate": "2027-04-05",
+      "category": "seasonal",
+      "isActive": true,
+      "createdAt": "2026-11-01T00:42:30.856Z",
+      "updatedAt": "2026-11-01T00:42:30.856Z"
+    }
+  ],
+  "series": [
+    {
+      "id": "series-xmas-flatlays",
+      "themeId": "theme-christmas-2026",
+      "title": "Festive Flatlays & Hot Cocoa",
+      "maxQuota": 25,
+      "currentCount": 18,
+      "status": "active",
+      "description": "Top-down cozy arrangements with cinnamon, ceramic mugs, and soft knit blankets.",
+      "createdAt": "2026-11-01T00:42:30.856Z",
+      "updatedAt": "2026-11-01T00:42:30.856Z"
+    },
+    {
+      "id": "series-cyber-neon",
+      "themeId": "theme-black-friday-2026",
+      "title": "Cyber Sale 3D Neon Banners",
+      "maxQuota": 20,
+      "currentCount": 19,
+      "status": "active",
+      "description": "Dark mode neon typographic discount signage and isometric gift boxes.",
+      "createdAt": "2026-11-01T00:42:30.856Z",
+      "updatedAt": "2026-11-01T00:42:30.856Z"
+    },
+    {
+      "id": "series-b2b-fintech",
+      "themeId": "theme-b2b-corporate",
+      "title": "Fintech Workspace Overhead",
+      "maxQuota": 50,
+      "currentCount": 12,
+      "status": "active",
+      "description": "Contemporary collaborative tech office spaces and data dash overviews.",
+      "createdAt": "2026-11-01T00:42:30.856Z",
+      "updatedAt": "2026-11-01T00:42:30.856Z"
+    },
+    {
+      "id": "series-clean-copyspace",
+      "themeId": "theme-minimalist-copy-space",
+      "title": "Clean Pastel Copy-Space Mockups",
+      "maxQuota": 30,
+      "currentCount": 6,
+      "status": "active",
+      "description": "Geometric neutral surfaces with soft natural window shadows and empty side banners.",
+      "createdAt": "2026-11-01T00:42:30.856Z",
+      "updatedAt": "2026-11-01T00:42:30.856Z"
+    }
+  ],
+  "prompts": [
+    {
+      "id": "prompt-festive-warmth",
+      "name": "Commercial Flatlay - Festive Warmth",
+      "promptText": "Overhead top-down flatlay composition of steaming cinnamon cocoa in a ceramic mug, warm wool knit blanket, pine cones, soft natural window light, muted scandinavian palette, 8k commercial stock photography --ar 3:2 --v 6.1",
+      "negativePrompt": "deformed, blurry, watermark, text, signature, low quality, oversaturated, noisy, artifacts, cartoon",
+      "commercialIntent": "Hero Background / Ad Banner",
+      "notes": "Proven high sales potential during November/December buying surge on Adobe Stock.",
+      "version": 2,
+      "parentId": null,
+      "isLatest": false,
+      "parameters": {
+        "aspectRatio": "3:2",
+        "engine": "Midjourney v6.1"
+      },
+      "createdAt": "2026-11-01T00:42:30.856Z",
+      "updatedAt": "2026-11-01T00:42:30.856Z"
+    },
+    {
+      "id": "prompt-fintech-data",
+      "name": "Futuristic Fintech Data Visualization",
+      "promptText": "Abstract holographic financial data streams, sleek glass interface elements, subtle blue and violet neon illumination, depth of field, high-end enterprise SaaS commercial graphic --ar 16:9",
+      "negativePrompt": "cartoon, 3d render plastic, low resolution, grainy, garish colors, clutter, text labels",
+      "commercialIntent": "Tech Website Hero",
+      "notes": "Targeting enterprise fintech and corporate digital transformation publishers.",
+      "version": 1,
+      "parentId": null,
+      "isLatest": true,
+      "parameters": {
+        "aspectRatio": "16:9",
+        "engine": "Flux.1 Dev"
+      },
+      "createdAt": "2026-11-01T00:42:30.856Z",
+      "updatedAt": "2026-11-01T00:42:30.856Z"
+    },
+    {
+      "id": "prompt-copyspace-studio",
+      "name": "Minimalist Aesthetic Studio Copy-Space",
+      "promptText": "Minimalist concrete pedestal podium in soft morning shadow, generous negative copy space on the right, architectural clean lines, neutral beige and stone textures, editorial aesthetic --ar 4:3",
+      "negativePrompt": "busy, crowded, distorted, human figures, high contrast harsh shadows, oversaturated",
+      "commercialIntent": "Graphic Design Copy-Space",
+      "notes": "Essential stock asset type: graphic designers specifically search for copy space to lay out headings.",
+      "version": 1,
+      "parentId": null,
+      "isLatest": true,
+      "parameters": {
+        "aspectRatio": "4:3",
+        "engine": "Midjourney v6.1"
+      },
+      "createdAt": "2026-11-01T00:42:30.856Z",
+      "updatedAt": "2026-11-01T00:42:30.856Z"
+    },
+    {
+      "id": "prompt_1793493987059_itjws",
+      "name": "Commercial Flatlay - Festive Warmth",
+      "promptText": "Overhead top-down flatlay composition of steaming cinnamon cocoa in a ceramic mug, warm wool knit blanket, pine cones, soft natural window light, muted scandinavian palette, 8k commercial stock photography --ar 3:2 --v 6.1",
+      "negativePrompt": "deformed, blurry, watermark, text, signature, low quality, oversaturated, noisy, artifacts, cartoon",
+      "commercialIntent": "Hero Background / Ad Banner",
+      "notes": "Proven high sales potential during November/December buying surge on Adobe Stock.",
+      "version": 3,
+      "parentId": "prompt-festive-warmth",
+      "isLatest": true,
+      "parameters": {
+        "aspectRatio": "3:2",
+        "engine": "Midjourney v6.1"
+      },
+      "createdAt": "2026-11-01T00:46:27.059Z",
+      "updatedAt": "2026-11-01T00:46:27.059Z"
+    }
+  ],
+  "brandBlacklist": [
+    "apple",
+    "iphone",
+    "ipad",
+    "macbook",
+    "nike",
+    "adidas",
+    "coca-cola",
+    "pepsi",
+    "starbucks",
+    "mcdonalds",
+    "gucci",
+    "louis vuitton",
+    "disney",
+    "lego",
+    "tesla",
+    "microsoft",
+    "windows",
+    "playstation",
+    "xbox",
+    "amazon"
+  ],
+  "rejections": [
+    {
+      "id": "rej-4",
+      "assetId": "asset-copyspace-03",
+      "filename": "beige_pedestal_banner_03.jpg",
+      "templateId": "prompt-copyspace-studio",
+      "seriesId": "series-clean-copyspace",
+      "taxonomyCode": "LOW_COMMERCIAL_VALUE",
+      "taxonomyLabel": "Low Commercial Value",
+      "notes": "Lacks focal point; lighting flat and pedestal undifferentiated from floor.",
+      "rejectedAt": "2026-10-30T00:57:55.544Z"
+    },
+    {
+      "id": "rej-3",
+      "assetId": "asset-cyber-03",
+      "filename": "neon_sale_box_03.jpg",
+      "templateId": "prompt-fintech-data",
+      "seriesId": "series-cyber-neon",
+      "taxonomyCode": "TECHNICAL_ISSUES",
+      "taxonomyLabel": "Technical Issues",
+      "notes": "Severe compression noise in dark background gradients.",
+      "rejectedAt": "2026-10-29T00:57:55.544Z"
+    },
+    {
+      "id": "rej-2",
+      "assetId": "asset-cyber-02",
+      "filename": "neon_sale_box_02.jpg",
+      "templateId": "prompt-fintech-data",
+      "seriesId": "series-cyber-neon",
+      "taxonomyCode": "SIMILAR_CONTENT",
+      "taxonomyLabel": "Similar Content",
+      "notes": "Nearly indistinguishable from neon_sale_box_01.jpg; minor rotation of same geometry.",
+      "rejectedAt": "2026-10-28T00:57:55.544Z"
+    },
+    {
+      "id": "rej-1",
+      "assetId": "asset-xmas-04",
+      "filename": "winter_blanket_steam_04.jpg",
+      "templateId": "prompt-festive-warmth",
+      "seriesId": "series-xmas-flatlays",
+      "taxonomyCode": "TECHNICAL_ISSUES",
+      "taxonomyLabel": "Technical Issues",
+      "notes": "Excessive chromatic fringing along wool blanket edge and slight motion blur in steam.",
+      "rejectedAt": "2026-10-27T00:57:55.544Z"
+    }
+  ],
+  "earnings": [
+    {
+      "id": "earn-1",
+      "assetId": "asset-xmas-01",
+      "adobeContentId": "591029101",
+      "filename": "cozy_hot_cocoa_01.jpg",
+      "templateId": "prompt-festive-warmth",
+      "downloads": 12,
+      "amountUsd": 14.8,
+      "periodDate": "2026-10",
+      "licenseType": "Standard",
+      "importedAt": "2026-11-01T00:57:55.544Z"
+    },
+    {
+      "id": "earn-2",
+      "assetId": "asset-xmas-01",
+      "adobeContentId": "591029101",
+      "filename": "cozy_hot_cocoa_01.jpg",
+      "templateId": "prompt-festive-warmth",
+      "downloads": 4,
+      "amountUsd": 39.6,
+      "periodDate": "2026-10",
+      "licenseType": "Extended",
+      "importedAt": "2026-11-01T00:57:55.544Z"
+    },
+    {
+      "id": "earn-3",
+      "assetId": "asset-xmas-02",
+      "adobeContentId": "591029102",
+      "filename": "festive_cinnamon_mug_02.jpg",
+      "templateId": "prompt-festive-warmth",
+      "downloads": 8,
+      "amountUsd": 9.9,
+      "periodDate": "2026-10",
+      "licenseType": "Standard",
+      "importedAt": "2026-11-01T00:57:55.544Z"
+    },
+    {
+      "id": "earn-4",
+      "assetId": "asset-fintech-01",
+      "adobeContentId": "591029301",
+      "filename": "fintech_hologram_dash_01.jpg",
+      "templateId": "prompt-fintech-data",
+      "downloads": 22,
+      "amountUsd": 28.5,
+      "periodDate": "2026-10",
+      "licenseType": "Subscription",
+      "importedAt": "2026-11-01T00:57:55.544Z"
+    },
+    {
+      "id": "earn-5",
+      "assetId": "asset-copyspace-01",
+      "adobeContentId": "591029401",
+      "filename": "minimal_podium_stone_01.jpg",
+      "templateId": "prompt-copyspace-studio",
+      "downloads": 15,
+      "amountUsd": 18.2,
+      "periodDate": "2026-10",
+      "licenseType": "Standard",
+      "importedAt": "2026-11-01T00:57:55.544Z"
+    }
+  ],
+  "assets": [
+    {
+      "id": "asset-xmas-01",
+      "filename": "cozy_hot_cocoa_01.jpg",
+      "adobeContentId": "591029101",
+      "templateId": "prompt-festive-warmth",
+      "seriesId": "series-xmas-flatlays",
+      "status": "approved",
+      "qcScore": 92,
+      "qcPass": true
+    },
+    {
+      "id": "asset-xmas-02",
+      "filename": "festive_cinnamon_mug_02.jpg",
+      "adobeContentId": "591029102",
+      "templateId": "prompt-festive-warmth",
+      "seriesId": "series-xmas-flatlays",
+      "status": "approved",
+      "qcScore": 89,
+      "qcPass": true
+    },
+    {
+      "id": "asset-xmas-03",
+      "filename": "pinecone_knit_table_03.jpg",
+      "adobeContentId": "591029103",
+      "templateId": "prompt-festive-warmth",
+      "seriesId": "series-xmas-flatlays",
+      "status": "approved",
+      "qcScore": 94,
+      "qcPass": true
+    },
+    {
+      "id": "asset-xmas-04",
+      "filename": "winter_blanket_steam_04.jpg",
+      "adobeContentId": "591029104",
+      "templateId": "prompt-festive-warmth",
+      "seriesId": "series-xmas-flatlays",
+      "status": "rejected",
+      "qcScore": 68,
+      "qcPass": false
+    },
+    {
+      "id": "asset-cyber-01",
+      "filename": "neon_sale_box_01.jpg",
+      "adobeContentId": "591029201",
+      "templateId": "prompt-fintech-data",
+      "seriesId": "series-cyber-neon",
+      "status": "approved",
+      "qcScore": 88,
+      "qcPass": true
+    },
+    {
+      "id": "asset-cyber-02",
+      "filename": "neon_sale_box_02.jpg",
+      "adobeContentId": "591029202",
+      "templateId": "prompt-fintech-data",
+      "seriesId": "series-cyber-neon",
+      "status": "rejected",
+      "qcScore": 76,
+      "qcPass": true
+    },
+    {
+      "id": "asset-cyber-03",
+      "filename": "neon_sale_box_03.jpg",
+      "adobeContentId": "591029203",
+      "templateId": "prompt-fintech-data",
+      "seriesId": "series-cyber-neon",
+      "status": "rejected",
+      "qcScore": 54,
+      "qcPass": false
+    },
+    {
+      "id": "asset-fintech-01",
+      "filename": "fintech_hologram_dash_01.jpg",
+      "adobeContentId": "591029301",
+      "templateId": "prompt-fintech-data",
+      "seriesId": "series-b2b-fintech",
+      "status": "approved",
+      "qcScore": 96,
+      "qcPass": true
+    },
+    {
+      "id": "asset-fintech-02",
+      "filename": "fintech_glass_interface_02.jpg",
+      "adobeContentId": "591029302",
+      "templateId": "prompt-fintech-data",
+      "seriesId": "series-b2b-fintech",
+      "status": "approved",
+      "qcScore": 90,
+      "qcPass": true
+    },
+    {
+      "id": "asset-copyspace-01",
+      "filename": "minimal_podium_stone_01.jpg",
+      "adobeContentId": "591029401",
+      "templateId": "prompt-copyspace-studio",
+      "seriesId": "series-clean-copyspace",
+      "status": "approved",
+      "qcScore": 95,
+      "qcPass": true
+    },
+    {
+      "id": "asset-copyspace-02",
+      "filename": "concrete_shadow_empty_02.jpg",
+      "adobeContentId": "591029402",
+      "templateId": "prompt-copyspace-studio",
+      "seriesId": "series-clean-copyspace",
+      "status": "approved",
+      "qcScore": 91,
+      "qcPass": true
+    },
+    {
+      "id": "asset-copyspace-03",
+      "filename": "beige_pedestal_banner_03.jpg",
+      "adobeContentId": "591029403",
+      "templateId": "prompt-copyspace-studio",
+      "seriesId": "series-clean-copyspace",
+      "status": "rejected",
+      "qcScore": 62,
+      "qcPass": false
+    }
+  ]
+}

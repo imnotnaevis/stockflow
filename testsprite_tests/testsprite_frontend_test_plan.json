@@ -1,0 +1,1426 @@
+[
+  {
+    "id": "TC001",
+    "title": "Access the executive dashboard after login",
+    "description": "This verifies that a user can log in with the master password and reach the executive dashboard with its core KPI and activity content.",
+    "category": "Master Password Authentication",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the executive dashboard is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify KPI cards and recent activity content are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Upload assets and inspect duplicate detection",
+    "description": "This verifies that image uploads appear in the asset list and duplicate detection results are surfaced for review.",
+    "category": "Assets Ingestion, Deduplication & Quality Control",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /assets"
+      },
+      {
+        "type": "action",
+        "description": "Upload PNG or JPG files through the file browser"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the uploaded assets appear in the asset list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify duplicate detection results are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "View the executive dashboard after login",
+    "description": "This test verifies that a user can log in with the master password and land on the dashboard with key portfolio status information visible.",
+    "category": "Seasonal Production Calendar & Quota Balance",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the executive dashboard is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify KPI cards and recent asset links are visible"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "Run quality control and review inspection findings",
+    "description": "This verifies that selected assets can be sent through QC and that the inspection panel shows quality findings for review.",
+    "category": "Assets Ingestion, Deduplication & Quality Control",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /assets"
+      },
+      {
+        "type": "action",
+        "description": "Select one or more uploaded assets for review"
+      },
+      {
+        "type": "action",
+        "description": "Run quality control on the selected assets"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the inspection panel shows quality findings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify sharpness, artifact, IP risk, and copy-space analysis are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Generate a CSV batch for selected assets",
+    "description": "This test verifies that a user can select export-ready assets and generate an Adobe Stock CSV batch.",
+    "category": "Adobe Stock Pre-Flight Checklist & Batch CSV Export",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the export page"
+      },
+      {
+        "type": "action",
+        "description": "Select export-ready assets"
+      },
+      {
+        "type": "action",
+        "description": "Generate the CSV batch"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the CSV batch is generated"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a download option is available"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Review dashboard analytics and recent assets",
+    "description": "This verifies that the dashboard shows the production metrics, charts, and recent asset links needed for daily portfolio oversight.",
+    "category": "Executive KPI Dashboard & Analytics",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to the dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the weekly production target, seasonal alerts, and portfolio health score are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify production pipeline and category balance analytics are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Review export readiness before generating CSV",
+    "description": "This test verifies that a user can inspect the pre-flight checklist and confirm the assets are ready for export.",
+    "category": "Adobe Stock Pre-Flight Checklist & Batch CSV Export",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the export page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify pre-flight checklist metrics are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify export-ready assets are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "Confirm submission after CSV generation",
+    "description": "This test verifies that a user can confirm a generated export batch and advance selected assets to submitted status.",
+    "category": "Adobe Stock Pre-Flight Checklist & Batch CSV Export",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the export page"
+      },
+      {
+        "type": "action",
+        "description": "Select export-ready assets"
+      },
+      {
+        "type": "action",
+        "description": "Generate the CSV batch"
+      },
+      {
+        "type": "action",
+        "description": "Confirm submission"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the submission confirmation is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the selected assets are marked as submitted"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "Generate and save SEO metadata for an asset",
+    "description": "This verifies that a user can generate compliant SEO metadata, edit it, and save the updated title and keywords.",
+    "category": "Assets Ingestion, Deduplication & Quality Control",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /assets"
+      },
+      {
+        "type": "action",
+        "description": "Select an asset"
+      },
+      {
+        "type": "action",
+        "description": "Generate SEO metadata for the selected asset"
+      },
+      {
+        "type": "action",
+        "description": "Edit the generated title and keywords"
+      },
+      {
+        "type": "action",
+        "description": "Save the updated metadata"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated metadata is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the asset reflects the saved metadata changes"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC010",
+    "title": "Create a seasonal theme",
+    "description": "This test verifies that a user can create a new themed production item and see it added to the calendar.",
+    "category": "Seasonal Production Calendar & Quota Balance",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the seasonal production calendar"
+      },
+      {
+        "type": "action",
+        "description": "Open the new theme form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the theme name field with a unique theme name"
+      },
+      {
+        "type": "action",
+        "description": "Select a category"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a valid target event date"
+      },
+      {
+        "type": "action",
+        "description": "Select a quarter"
+      },
+      {
+        "type": "action",
+        "description": "Save the theme"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new theme appears in the production calendar"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC011",
+    "title": "Plan seasonal production in the calendar",
+    "description": "This verifies that a production planner can view the seasonal calendar and use it to manage holiday-window capacity planning.",
+    "category": "Seasonal Production Calendar",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /calendar"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify seasonal production windows are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify quota planning information is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC012",
+    "title": "Branch a prompt template version",
+    "description": "This test verifies that a user can create a new version of an existing prompt template without overwriting the original version.",
+    "category": "Versioned Prompt Templates & Series Quota",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the prompt templates page"
+      },
+      {
+        "type": "action",
+        "description": "Open an existing prompt template"
+      },
+      {
+        "type": "action",
+        "description": "Branch the version"
+      },
+      {
+        "type": "action",
+        "description": "Save the branched version"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a new prompt version is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the original template version is still available"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC013",
+    "title": "Apply a prompt advisor recommendation as a new template version",
+    "description": "Verifies that a prompt engineer can open an advisor recommendation for a struggling template and create an updated template version from it.",
+    "category": "Feedback Loop, Prompt Advisor & Calibration Matrix",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /rejections"
+      },
+      {
+        "type": "action",
+        "description": "Open the AI Prompt Advisor for a struggling template"
+      },
+      {
+        "type": "action",
+        "description": "Apply the advisor recommendation as a new template version"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the advisor rationale and prompt recommendations are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated template version is created"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC014",
+    "title": "Open a recent asset from the dashboard",
+    "description": "This verifies that a user can use the dashboard to open a recently accessed asset for follow-up work.",
+    "category": "Executive KPI Dashboard & Analytics",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click a recent asset link from the dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the asset detail area is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the selected asset is shown"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC015",
+    "title": "View seasonal windows and quota balance",
+    "description": "This test verifies that the calendar shows the active seasonal planning windows and quota meters needed for production planning.",
+    "category": "Seasonal Production Calendar & Quota Balance",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the seasonal production calendar"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify active seasonal windows are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify category quota meters are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC016",
+    "title": "Review rejection patterns and apply a Prompt Advisor recommendation",
+    "description": "This verifies that a reviewer can inspect rejection trends and apply an AI recommendation to improve a struggling prompt.",
+    "category": "Rejection Analysis & Prompt Advisor",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /rejections"
+      },
+      {
+        "type": "action",
+        "description": "Review the rejection taxonomy and pattern summary"
+      },
+      {
+        "type": "action",
+        "description": "Open the Prompt Advisor for a struggling prompt"
+      },
+      {
+        "type": "action",
+        "description": "Apply the recommended improvement"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the prompt recommendation is applied"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated prompt is reflected in the advisor view"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC017",
+    "title": "Review rejection patterns and threshold guidance",
+    "description": "Verifies that a reviewer can inspect rejection taxonomy insights and adjust the warning threshold to update the displayed guidance.",
+    "category": "Feedback Loop, Prompt Advisor & Calibration Matrix",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /rejections"
+      },
+      {
+        "type": "action",
+        "description": "Adjust the acceptance threshold slider to a higher value"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify rejection taxonomy insights are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the warning threshold guidance updates"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC018",
+    "title": "Moderate multiple assets with reviewer notes",
+    "description": "This verifies that a reviewer can batch moderate selected assets and attach notes when rejecting items.",
+    "category": "Assets Ingestion, Deduplication & Quality Control",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /assets"
+      },
+      {
+        "type": "action",
+        "description": "Select multiple assets"
+      },
+      {
+        "type": "action",
+        "description": "Choose a moderation action"
+      },
+      {
+        "type": "action",
+        "description": "Add reviewer notes for any rejected items"
+      },
+      {
+        "type": "action",
+        "description": "Submit the moderation decision"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the batch moderation outcome is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify reviewer notes are associated with rejected items"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC019",
+    "title": "Create a prompt template",
+    "description": "This test verifies that a user can create a new reusable prompt template and see it listed in the template library.",
+    "category": "Versioned Prompt Templates & Series Quota",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the prompt templates page"
+      },
+      {
+        "type": "action",
+        "description": "Open the new prompt template form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the prompt content field with a unique prompt template"
+      },
+      {
+        "type": "action",
+        "description": "Save the template"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new template appears in the template library"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC020",
+    "title": "Manage prompt series quota for a template set",
+    "description": "This verifies that a user can review and adjust series quota usage while planning prompt coverage.",
+    "category": "Prompt Template Engine",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /prompts"
+      },
+      {
+        "type": "action",
+        "description": "Open series quota management for a template set"
+      },
+      {
+        "type": "action",
+        "description": "Adjust the quota allocation"
+      },
+      {
+        "type": "action",
+        "description": "Save the quota changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated quota is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the template set reflects the new quota allocation"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC021",
+    "title": "Create a prompt template for seasonal planning",
+    "description": "This verifies that a prompt engineer can create a new template to support seasonal production planning.",
+    "category": "Prompt Template Engine",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /prompts"
+      },
+      {
+        "type": "action",
+        "description": "Create a new prompt template"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the template details"
+      },
+      {
+        "type": "action",
+        "description": "Save the new template"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new template appears in the template list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the template is available for reuse"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC022",
+    "title": "Create a series linked to parent themes",
+    "description": "This test verifies that a user can create and save a series with quota settings tied to parent themes.",
+    "category": "Versioned Prompt Templates & Series Quota",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the prompt templates page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the series view"
+      },
+      {
+        "type": "action",
+        "description": "Open the new series form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the series name field with a unique series name"
+      },
+      {
+        "type": "action",
+        "description": "Select a parent theme"
+      },
+      {
+        "type": "action",
+        "description": "Set a valid quota limit"
+      },
+      {
+        "type": "action",
+        "description": "Save the series"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new series appears in the series view"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC023",
+    "title": "Import earnings data from an Adobe Sales CSV",
+    "description": "Verifies that a finance user can preview imported earnings data and complete the import into the earnings view.",
+    "category": "Feedback Loop, Prompt Advisor & Calibration Matrix",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /rejections"
+      },
+      {
+        "type": "action",
+        "description": "Import an Adobe Sales CSV file"
+      },
+      {
+        "type": "action",
+        "description": "Complete the earnings import"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an earnings data preview is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the earnings view is updated"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC024",
+    "title": "Filter themes by seasonal window status",
+    "description": "This test verifies that a user can filter the calendar to review themes by produce-now, upcoming, or late status.",
+    "category": "Seasonal Production Calendar & Quota Balance",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the seasonal production calendar"
+      },
+      {
+        "type": "action",
+        "description": "Select a seasonal window status filter"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the calendar updates to show themes for the selected status"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC025",
+    "title": "Branch an existing prompt template",
+    "description": "This verifies that a curator can branch a template to create a versioned variation without overwriting the original.",
+    "category": "Prompt Template Engine",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /prompts"
+      },
+      {
+        "type": "action",
+        "description": "Open an existing prompt template"
+      },
+      {
+        "type": "action",
+        "description": "Create a branch from the template"
+      },
+      {
+        "type": "action",
+        "description": "Save the branched version"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the branched template appears in the template list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the original template remains available"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC026",
+    "title": "Review series quota usage",
+    "description": "This test verifies that a user can switch to the series view and inspect usage against the maximum quota.",
+    "category": "Versioned Prompt Templates & Series Quota",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the prompt templates page"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the series view"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify series usage meters are displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify quota limits are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC027",
+    "title": "Compare Gemini QC and moderator alignment in the calibration view",
+    "description": "Verifies that a reviewer can inspect the confusion matrix and review how model outcomes align with moderator decisions.",
+    "category": "Feedback Loop, Prompt Advisor & Calibration Matrix",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /rejections"
+      },
+      {
+        "type": "action",
+        "description": "Open the calibration view"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the confusion matrix is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify moderator alignment metrics are displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC028",
+    "title": "Update an asset with a manual status override",
+    "description": "This verifies that a reviewer can open asset details, apply a manual status override, and save a reason note.",
+    "category": "Assets Ingestion, Deduplication & Quality Control",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /assets"
+      },
+      {
+        "type": "action",
+        "description": "Open the contextual details drawer for an asset"
+      },
+      {
+        "type": "action",
+        "description": "Apply a manual status override"
+      },
+      {
+        "type": "action",
+        "description": "Fill in a reason note"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the override is applied"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the reason note is saved"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC029",
+    "title": "Add restricted brand terms to the blacklist",
+    "description": "Verifies that a compliance user can add new brand or trademark terms and save them so they appear in the blacklist.",
+    "category": "System Settings & Compliance Policy",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings"
+      },
+      {
+        "type": "action",
+        "description": "Add a new brand or trademark term to the blacklist"
+      },
+      {
+        "type": "action",
+        "description": "Save the blacklist changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the blacklist includes the new restricted term"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC030",
+    "title": "Edit a seasonal theme",
+    "description": "This test verifies that a user can update an existing seasonal theme and see the revised calendar entry.",
+    "category": "Seasonal Production Calendar & Quota Balance",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the seasonal production calendar"
+      },
+      {
+        "type": "action",
+        "description": "Open an existing theme for editing"
+      },
+      {
+        "type": "action",
+        "description": "Update the theme details"
+      },
+      {
+        "type": "action",
+        "description": "Save the changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the updated theme appears in the production calendar"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC031",
+    "title": "Import earnings data to complete rejection feedback review",
+    "description": "This verifies that finance or analytics users can import earnings data and see it incorporated into the rejection feedback workflow.",
+    "category": "Rejection Analysis & Prompt Advisor",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /rejections"
+      },
+      {
+        "type": "action",
+        "description": "Import earnings data"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the earnings data appears in the review workspace"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the feedback loop metrics are updated"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC032",
+    "title": "Pause and resume automated quality control",
+    "description": "This verifies that the QC queue can be paused and resumed during automated review.",
+    "category": "Assets Ingestion, Deduplication & Quality Control",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /assets"
+      },
+      {
+        "type": "action",
+        "description": "Start the QC queue"
+      },
+      {
+        "type": "action",
+        "description": "Pause the automated review process"
+      },
+      {
+        "type": "action",
+        "description": "Resume the automated review process"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the QC queue is running again"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the queue state reflects the resumed review process"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC033",
+    "title": "Remove a brand term from the blacklist",
+    "description": "Verifies that a compliance user can remove an existing blacklist entry and save the updated list.",
+    "category": "System Settings & Compliance Policy",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings"
+      },
+      {
+        "type": "action",
+        "description": "Remove a brand term from the blacklist"
+      },
+      {
+        "type": "action",
+        "description": "Save the blacklist changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the blacklist no longer includes the removed term"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC034",
+    "title": "Delete a seasonal theme",
+    "description": "This test verifies that a user can remove an existing theme and confirm that it no longer appears in the calendar.",
+    "category": "Seasonal Production Calendar & Quota Balance",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Click the link to the seasonal production calendar"
+      },
+      {
+        "type": "action",
+        "description": "Open an existing theme for deletion"
+      },
+      {
+        "type": "action",
+        "description": "Confirm the theme removal"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the theme is no longer displayed in the production calendar"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC035",
+    "title": "Review health score formula documentation",
+    "description": "Verifies that a user can open the settings page and read the portfolio health score definitions needed to understand the score.",
+    "category": "System Settings & Compliance Policy",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the master password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to /settings"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify health score formula documentation is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the approval rate, diversity, similarity, and freshness definitions are visible"
+      }
+    ],
+    "priority": "Low"
+  },
+  {
+    "id": "TC036",
+    "title": "Reject an incorrect master password",
+    "description": "This verifies that an incorrect password is rejected and the user remains on the login screen with an error message.",
+    "category": "Master Password Authentication",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /login"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with an incorrect password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the login form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an authentication error message is visible"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the login screen remains visible"
+      }
+    ],
+    "priority": "Low"
+  }
+]
