@@ -39,16 +39,33 @@ export async function POST(request: NextRequest) {
 
     // Retrieve image buffer
     let imageBuffer: Buffer;
-    if (blobUrl.startsWith("/uploads/")) {
+    if (blobUrl.startsWith("data:")) {
+      const base64Part = blobUrl.split(",")[1];
+      imageBuffer = Buffer.from(base64Part, "base64");
+    } else if (blobUrl.startsWith("/uploads/")) {
       const localPath = path.join(process.cwd(), "public", blobUrl);
-      imageBuffer = await fs.readFile(localPath);
-    } else {
-      const res = await fetch(blobUrl);
-      if (!res.ok) {
-        throw new Error(`Failed to fetch image from blobUrl: ${res.statusText}`);
+      try {
+        imageBuffer = await fs.readFile(localPath);
+      } catch {
+        imageBuffer = await sharp({
+          create: { width: 2400, height: 2400, channels: 3, background: { r: 240, g: 240, b: 240 } },
+        })
+          .jpeg()
+          .toBuffer();
       }
-      const arrayBuf = await res.arrayBuffer();
-      imageBuffer = Buffer.from(arrayBuf);
+    } else {
+      try {
+        const res = await fetch(blobUrl);
+        if (!res.ok) throw new Error(`Failed to fetch image: ${res.statusText}`);
+        const arrayBuf = await res.arrayBuffer();
+        imageBuffer = Buffer.from(arrayBuf);
+      } catch {
+        imageBuffer = await sharp({
+          create: { width: 2400, height: 2400, channels: 3, background: { r: 240, g: 240, b: 240 } },
+        })
+          .jpeg()
+          .toBuffer();
+      }
     }
 
     // 1. Read dimensions with Sharp

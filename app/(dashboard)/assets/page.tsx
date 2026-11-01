@@ -24,7 +24,6 @@ import {
   Tag,
   History,
 } from "lucide-react";
-import { upload } from "@vercel/blob/client";
 import { RightDrawer } from "@/components/drawer";
 import { CONFIG, ASSET_STATUSES, type AssetStatus } from "@/lib/config";
 import type { GeminiQcResult } from "@/lib/gemini";
@@ -229,33 +228,24 @@ export default function AssetsPage() {
     processUploadQueue(newItems);
   };
 
-  // Upload to Vercel Blob and process server-side
+  // Upload and process server-side
   const processUploadQueue = async (items: UploadQueueItem[]) => {
     for (const item of items) {
       setUploadQueue((prev) =>
-        prev.map((q) => (q.id === item.id ? { ...q, status: "uploading", progress: 10 } : q))
+        prev.map((q) => (q.id === item.id ? { ...q, status: "uploading", progress: 25 } : q))
       );
 
       try {
-        let blobUrl = "";
-        try {
-          const newBlob = await upload(item.file.name, item.file, {
-            access: "public",
-            handleUploadUrl: "/api/upload",
-          });
-          blobUrl = newBlob.url;
-        } catch {
-          blobUrl = URL.createObjectURL(item.file);
+        const formData = new FormData();
+        formData.append("file", item.file);
+        formData.append("filename", item.file.name);
+        if (seriesFilter !== "all") {
+          formData.append("seriesId", seriesFilter);
         }
 
         setUploadQueue((prev) =>
-          prev.map((q) => (q.id === item.id ? { ...q, status: "processing", progress: 60, blobUrl } : q))
+          prev.map((q) => (q.id === item.id ? { ...q, status: "processing", progress: 65 } : q))
         );
-
-        const formData = new FormData();
-        formData.append("file", item.file);
-        formData.append("blobUrl", blobUrl);
-        formData.append("filename", item.file.name);
 
         const res = await fetch("/api/assets", {
           method: "POST",
@@ -274,7 +264,7 @@ export default function AssetsPage() {
                   ...q,
                   status: "success",
                   progress: 100,
-                  qcResult: data.qcResult,
+                  qcResult: data.qc,
                   duplicateCheck: data.duplicateCheck,
                 }
               : q
