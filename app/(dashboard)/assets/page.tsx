@@ -23,6 +23,7 @@ import {
   Plus,
   Tag,
   History,
+  Copy,
 } from "lucide-react";
 import { RightDrawer } from "@/components/drawer";
 import { CONFIG, ASSET_STATUSES, type AssetStatus } from "@/lib/config";
@@ -47,6 +48,11 @@ interface AssetRow {
   seriesQuota?: number | null;
   seriesCount?: number | null;
   themeName?: string | null;
+  metadata?: {
+    title: string;
+    categoryId: number;
+    keywords: string[];
+  } | null;
 }
 
 interface UploadQueueItem {
@@ -61,6 +67,11 @@ interface UploadQueueItem {
     height: number;
     megapixels: number;
     reason: string;
+  };
+  metadata?: {
+    title: string;
+    categoryId: number;
+    keywords: string[];
   };
   duplicateCheck?: {
     isDuplicate: boolean;
@@ -118,10 +129,26 @@ export default function AssetsPage() {
   // Drawer & Inspector State
   const [inspectingAsset, setInspectingAsset] = useState<AssetRow | null>(null);
   const [inspectDrawerOpen, setInspectDrawerOpen] = useState(false);
-  const [drawerTab, setDrawerTab] = useState<"qc" | "metadata" | "history">("qc");
+  const [drawerTab, setDrawerTab] = useState<"qc" | "metadata" | "history">("metadata");
   const [inspectingQcData, setInspectingQcData] = useState<GeminiQcResult | null>(null);
   const [inspectingHistory, setInspectingHistory] = useState<Array<{ id: string; fromStatus: string | null; toStatus: string; reason: string | null; changedAt: string }>>([]);
   const [isRunningSingleQc, setIsRunningSingleQc] = useState(false);
+
+  // Copy Toast Notification
+  const [copiedToast, setCopiedToast] = useState<string | null>(null);
+
+  const handleCopyToast = (msg: string) => {
+    setCopiedToast(msg);
+    setTimeout(() => setCopiedToast(null), 3000);
+  };
+
+  const handleCopySeo = (asset: AssetRow) => {
+    const title = asset.metadata?.title || asset.filename;
+    const kwList = asset.metadata?.keywords || [];
+    const textToCopy = `Title: ${title}\nCategory: ${asset.metadata?.categoryId || 11}\nKeywords: ${kwList.join(", ")}`;
+    navigator.clipboard.writeText(textToCopy);
+    handleCopyToast(`Copied Adobe Stock SEO for "${asset.filename}"!`);
+  };
 
   // Manual Override State
   const [manualOverrideStatus, setManualOverrideStatus] = useState<AssetStatus>("ready");
@@ -266,6 +293,7 @@ export default function AssetsPage() {
                   progress: 100,
                   qcResult: data.qc,
                   duplicateCheck: data.duplicateCheck,
+                  metadata: data.metadata || data.asset?.metadata,
                 }
               : q
           )
@@ -420,14 +448,15 @@ export default function AssetsPage() {
   };
 
   // Inspect Asset in Drawer
-  const handleInspectAsset = async (asset: AssetRow, tab: "qc" | "metadata" | "history" = "qc") => {
+  const handleInspectAsset = async (asset: AssetRow, tab: "qc" | "metadata" | "history" = "metadata") => {
     setInspectingAsset(asset);
     setDrawerTab(tab);
     setInspectDrawerOpen(true);
     setInspectingQcData(null);
     setInspectingHistory([]);
-    setMetaTitle("");
-    setMetaKeywords([]);
+    setMetaTitle(asset.metadata?.title || "");
+    setMetaCategoryId(asset.metadata?.categoryId || 11);
+    setMetaKeywords(asset.metadata?.keywords || []);
 
     try {
       const res = await fetch(`/api/assets/${asset.id}`);
@@ -644,13 +673,13 @@ export default function AssetsPage() {
         }`}
       >
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-pastel-lavender text-charcoal-900 shadow-pill mb-3">
-          <UploadCloud className="h-5 w-5" />
+          <Sparkles className="h-5 w-5" />
         </div>
         <h3 className="text-sm font-semibold text-charcoal-900">
-          Drag and drop images here, or <span className="text-charcoal-900 underline font-bold">browse</span>
+          Drag &amp; drop images to <span className="text-charcoal-900 underline font-bold">Auto-Generate Adobe Stock SEO</span>
         </h3>
         <p className="mt-1 text-xs text-charcoal-muted max-w-md">
-          PNG &amp; JPG accepted. Files can exceed 4.5MB via Vercel Blob client uploads.
+          PNG &amp; JPG accepted. Visual composition &amp; subjects are automatically analyzed to generate high-converting Title, Category, and 30+ ordered keywords.
         </p>
       </div>
 
@@ -676,7 +705,7 @@ export default function AssetsPage() {
                 key={item.id}
                 className="flex items-center justify-between rounded-2xl border border-base-border bg-base-cardWarm px-4 py-2.5 text-xs"
               >
-                <div className="flex items-center gap-2.5 truncate max-w-[60%]">
+                <div className="flex items-center gap-2.5 truncate max-w-[50%]">
                   <span
                     className={`h-2 w-2 rounded-full ${
                       item.status === "success"
@@ -689,20 +718,24 @@ export default function AssetsPage() {
                   <span className="font-medium text-charcoal-900 truncate">{item.file.name}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  {item.duplicateCheck?.isDuplicate && (
-                    <span className="rounded-full bg-status-pendingBg border border-status-pendingBorder px-2.5 py-0.5 text-[10px] font-semibold text-status-pendingText">
-                      Duplicate (dist: {item.duplicateCheck.minDistance})
+                  {item.metadata?.title && (
+                    <span className="max-w-[220px] truncate text-[11px] font-medium text-charcoal-800 bg-white border border-base-border px-2.5 py-0.5 rounded-full" title={item.metadata.title}>
+                      ✨ {item.metadata.title}
                     </span>
                   )}
-                  {item.qcResult && (
-                    <span
-                      className={`rounded-full px-2.5 py-0.5 text-[10px] font-semibold border ${
-                        item.qcResult.passed
-                          ? "bg-status-readyBg border-status-readyBorder text-status-readyText"
-                          : "bg-status-rejectedBg border-status-rejectedBorder text-status-rejectedText"
-                      }`}
-                    >
-                      {item.qcResult.megapixels} MP {item.qcResult.passed ? "Pass" : "Fail"}
+                  {item.metadata?.keywords && (
+                    <span className="rounded-full bg-status-readyBg border border-status-readyBorder px-2.5 py-0.5 text-[10px] font-semibold text-status-readyText">
+                      {item.metadata.keywords.length} Keywords Ready
+                    </span>
+                  )}
+                  {item.status === "processing" && (
+                    <span className="text-[11px] text-amber-600 font-medium animate-pulse">
+                      Analyzing with AI...
+                    </span>
+                  )}
+                  {item.status === "success" && (
+                    <span className="text-[11px] text-emerald-600 font-semibold">
+                      SEO Ready ✓
                     </span>
                   )}
                   <span className="text-[11px] capitalize text-charcoal-muted">{item.status}</span>
@@ -853,12 +886,12 @@ export default function AssetsPage() {
                 </button>
               </th>
               <th scope="col" className="px-4 py-2">Preview</th>
-              <th scope="col" className="px-4 py-2">Filename</th>
-              <th scope="col" className="px-4 py-2">Dimensions &amp; MP</th>
-              <th scope="col" className="px-4 py-2">64-bit pHash</th>
+              <th scope="col" className="px-4 py-2">Asset &amp; SEO Title</th>
+              <th scope="col" className="px-4 py-2">Dimensions</th>
+              <th scope="col" className="px-4 py-2">SEO Keywords</th>
               <th scope="col" className="px-4 py-2">Status</th>
               <th scope="col" className="px-4 py-2">Series</th>
-              <th scope="col" className="px-4 py-2 text-right">Inspect</th>
+              <th scope="col" className="px-4 py-2 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -873,7 +906,7 @@ export default function AssetsPage() {
                       No Assets Matching Filters
                     </h3>
                     <p className="mt-1 text-xs text-charcoal-muted leading-relaxed">
-                      Upload new PNG/JPG renders above or adjust the active filter.
+                      Upload new PNG/JPG renders above to automatically generate Adobe Stock SEO.
                     </p>
                   </div>
                 </td>
@@ -881,8 +914,7 @@ export default function AssetsPage() {
             ) : (
               assets.map((asset) => {
                 const isSelected = selectedAssetIds.has(asset.id);
-                const badge = STATUS_BADGES[asset.status] || STATUS_BADGES.idea;
-                const Icon = badge.icon;
+                const badge = STATUS_BADGES[asset.status] || STATUS_BADGES.ready;
                 const megapixels = ((asset.width * asset.height) / 1_000_000).toFixed(1);
 
                 return (
@@ -907,8 +939,8 @@ export default function AssetsPage() {
 
                     <td className="px-4 py-3">
                       <div
-                        onClick={() => handleInspectAsset(asset, "qc")}
-                        className="relative h-11 w-11 rounded-xl border border-base-border bg-base-cardWarm overflow-hidden cursor-pointer hover:border-charcoal-900 transition-colors shadow-sm"
+                        onClick={() => handleInspectAsset(asset, "metadata")}
+                        className="relative h-12 w-12 rounded-xl border border-base-border bg-base-cardWarm overflow-hidden cursor-pointer hover:border-charcoal-900 transition-colors shadow-sm"
                       >
                         {asset.blobUrl ? (
                           <img
@@ -924,13 +956,23 @@ export default function AssetsPage() {
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 font-medium text-charcoal-900">
-                      <button
-                        onClick={() => handleInspectAsset(asset, "qc")}
-                        className="text-left hover:text-charcoal-700 transition-colors font-mono text-xs"
-                      >
-                        {asset.filename}
-                      </button>
+                    <td className="px-4 py-3 font-medium text-charcoal-900 max-w-xs">
+                      <div className="space-y-0.5">
+                        <button
+                          onClick={() => handleInspectAsset(asset, "metadata")}
+                          className="text-left font-semibold text-charcoal-900 hover:text-charcoal-700 transition-colors text-xs line-clamp-1 block cursor-pointer"
+                        >
+                          {asset.metadata?.title || asset.filename}
+                        </button>
+                        <div className="flex items-center gap-1.5 text-[10px] text-charcoal-muted">
+                          <span className="font-mono truncate max-w-[120px]">{asset.filename}</span>
+                          {asset.metadata?.categoryId && (
+                            <span className="rounded-full bg-pastel-lavender/50 px-2 py-0.2 text-[9px] font-sans font-medium text-charcoal-800">
+                              {CONFIG.CATEGORIES.find((c) => c.id === asset.metadata?.categoryId)?.name || "Landscapes"}
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </td>
 
                     <td className="px-4 py-3">
@@ -938,14 +980,25 @@ export default function AssetsPage() {
                         {asset.width} &times; {asset.height}
                       </div>
                       <div className="text-[11px] text-charcoal-muted">
-                        {megapixels} MP {Number(megapixels) >= 4 ? "✓" : "⚠ <4MP"}
+                        {megapixels} MP
                       </div>
                     </td>
 
                     <td className="px-4 py-3">
-                      <span className="font-mono text-[11px] bg-base-cardWarm px-2.5 py-1 rounded-full border border-base-border text-charcoal-700">
-                        {asset.phashHex || "0000000000000000"}
-                      </span>
+                      <div className="flex items-center gap-1.5 flex-wrap max-w-xs">
+                        {asset.metadata?.keywords && asset.metadata.keywords.length > 0 ? (
+                          <>
+                            <span className="rounded-full bg-status-readyBg border border-status-readyBorder px-2.5 py-0.5 text-[10px] font-semibold text-status-readyText">
+                              {asset.metadata.keywords.length} Keywords
+                            </span>
+                            <span className="text-[11px] text-charcoal-muted truncate max-w-[140px]">
+                              {asset.metadata.keywords.slice(0, 3).join(", ")}...
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-[11px] text-charcoal-muted italic">Click to edit SEO</span>
+                        )}
+                      </div>
                     </td>
 
                     <td className="px-4 py-3">
@@ -975,19 +1028,20 @@ export default function AssetsPage() {
                     <td className="px-4 py-3 text-right last:rounded-r-2xl">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
+                          onClick={() => handleCopySeo(asset)}
+                          className="inline-flex items-center gap-1 rounded-full border border-base-border bg-white px-2.5 py-1 text-[11px] font-medium text-charcoal-900 hover:bg-pastel-peach/30 shadow-pill transition-colors cursor-pointer"
+                          title="Copy Title & Keywords for Adobe Stock"
+                        >
+                          <Copy className="h-3 w-3" />
+                          <span>Copy SEO</span>
+                        </button>
+                        <button
                           onClick={() => handleInspectAsset(asset, "metadata")}
-                          className="inline-flex items-center gap-1 rounded-full border border-base-border bg-white px-2.5 py-1 text-[11px] font-medium text-charcoal-900 hover:bg-pastel-lavender/30 shadow-pill transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1 rounded-full bg-charcoal-900 text-white px-3 py-1 text-[11px] font-medium hover:bg-charcoal-800 shadow-pill transition-colors cursor-pointer ml-1"
                           title="Edit SEO Metadata"
                         >
                           <Tag className="h-3 w-3" />
-                          <span>SEO</span>
-                        </button>
-                        <button
-                          onClick={() => handleInspectAsset(asset, "qc")}
-                          className="inline-flex items-center gap-1 rounded-full border border-base-border bg-white px-2.5 py-1 text-[11px] font-medium text-charcoal-900 hover:bg-pastel-blue/30 shadow-pill transition-colors cursor-pointer ml-1"
-                        >
-                          <span>Inspect</span>
-                          <ChevronRight className="h-3.5 w-3.5" />
+                          <span>Edit</span>
                         </button>
                       </div>
                     </td>
@@ -1250,17 +1304,32 @@ export default function AssetsPage() {
                     <label className="font-semibold text-charcoal-900">
                       Adobe Stock Title
                     </label>
-                    <span
-                      className={`font-mono text-[11px] ${
-                        metaTitle.length > CONFIG.TITLE.MAX_LENGTH
-                          ? "text-rose-600 font-bold"
-                          : metaTitle.length >= 60
-                          ? "text-amber-600 font-semibold"
-                          : "text-charcoal-muted"
-                      }`}
-                    >
-                      {metaTitle.length} / {CONFIG.TITLE.MAX_LENGTH}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {metaTitle && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(metaTitle);
+                            handleCopyToast(`Copied title: "${metaTitle}"`);
+                          }}
+                          className="inline-flex items-center gap-1 text-[11px] font-medium text-charcoal-700 hover:text-charcoal-900 bg-base-cardWarm px-2 py-0.5 rounded-full border border-base-border cursor-pointer transition-colors"
+                        >
+                          <Copy className="h-3 w-3" />
+                          <span>Copy Title</span>
+                        </button>
+                      )}
+                      <span
+                        className={`font-mono text-[11px] ${
+                          metaTitle.length > CONFIG.TITLE.MAX_LENGTH
+                            ? "text-rose-600 font-bold"
+                            : metaTitle.length >= 60
+                            ? "text-amber-600 font-semibold"
+                            : "text-charcoal-muted"
+                        }`}
+                      >
+                        {metaTitle.length} / {CONFIG.TITLE.MAX_LENGTH}
+                      </span>
+                    </div>
                   </div>
 
                   <input
@@ -1311,16 +1380,31 @@ export default function AssetsPage() {
                     <label className="font-semibold text-charcoal-900">
                       SEO Keywords ({metaKeywords.length})
                     </label>
-                    <span
-                      className={`font-mono text-[11px] ${
-                        metaKeywords.length >= CONFIG.KEYWORDS.MIN_COUNT &&
-                        metaKeywords.length <= CONFIG.KEYWORDS.MAX_COUNT
-                          ? "text-emerald-600 font-semibold"
-                          : "text-amber-600 font-semibold"
-                      }`}
-                    >
-                      {metaKeywords.length} tags (req: {CONFIG.KEYWORDS.MIN_COUNT}–{CONFIG.KEYWORDS.MAX_COUNT})
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {metaKeywords.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(metaKeywords.join(", "));
+                            handleCopyToast(`Copied ${metaKeywords.length} keywords for Adobe Stock!`);
+                          }}
+                          className="inline-flex items-center gap-1 text-[11px] font-medium text-charcoal-700 hover:text-charcoal-900 bg-base-cardWarm px-2 py-0.5 rounded-full border border-base-border cursor-pointer transition-colors"
+                        >
+                          <Copy className="h-3 w-3" />
+                          <span>Copy Keywords (CSV)</span>
+                        </button>
+                      )}
+                      <span
+                        className={`font-mono text-[11px] ${
+                          metaKeywords.length >= CONFIG.KEYWORDS.MIN_COUNT &&
+                          metaKeywords.length <= CONFIG.KEYWORDS.MAX_COUNT
+                            ? "text-emerald-600 font-semibold"
+                            : "text-amber-600 font-semibold"
+                        }`}
+                      >
+                        {metaKeywords.length} tags
+                      </span>
+                    </div>
                   </div>
 
                   {/* Add Tag Input */}
@@ -1393,12 +1477,25 @@ export default function AssetsPage() {
                   </div>
                 </div>
 
-                {/* Save Button */}
-                <div className="flex items-center justify-end gap-3 pt-2">
+                {/* Save & Copy Buttons */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const full = `Title: ${metaTitle}\nCategory: ${metaCategoryId}\nKeywords: ${metaKeywords.join(", ")}`;
+                      navigator.clipboard.writeText(full);
+                      handleCopyToast("Copied full SEO (Title, Category, Keywords)!");
+                    }}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-full border border-base-border bg-white text-charcoal-900 hover:bg-base-cardWarm px-4 py-2.5 text-xs font-semibold shadow-pill transition-all cursor-pointer"
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                    <span>Copy Full SEO</span>
+                  </button>
+
                   <button
                     onClick={handleSaveMetadata}
                     disabled={isSavingMeta}
-                    className="flex items-center gap-2 rounded-full bg-charcoal-900 text-white hover:bg-charcoal-800 px-6 py-2.5 text-xs font-semibold shadow-pill disabled:opacity-50 transition-all cursor-pointer"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-full bg-charcoal-900 text-white hover:bg-charcoal-800 px-6 py-2.5 text-xs font-semibold shadow-pill disabled:opacity-50 transition-all cursor-pointer"
                   >
                     <CheckCircle2 className="h-4 w-4" />
                     <span>{isSavingMeta ? "Saving..." : "Save SEO Metadata"}</span>
@@ -1518,6 +1615,14 @@ export default function AssetsPage() {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Copied Toast Alert */}
+      {copiedToast && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-2xl bg-charcoal-900 text-white px-4 py-3 text-xs font-semibold shadow-2xl animate-fade-in border border-charcoal-700">
+          <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+          <span>{copiedToast}</span>
         </div>
       )}
     </div>

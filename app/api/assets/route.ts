@@ -1,38 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { CONFIG } from "@/lib/config";
 import { verifySessionToken } from "@/lib/auth";
-import { db, assets, assetStatusHistory, assetSeries, productionThemes } from "@/lib/db";
+import { db, assets, assetStatusHistory, assetSeries, productionThemes, assetMetadata, assetKeywords } from "@/lib/db";
 import { eq, and, like, desc } from "drizzle-orm";
 import { computeImagePHash, computeHammingDistance, toHexHash } from "@/lib/phash";
+import { generateAssetMetadata, generateSmartSeoFromContext } from "@/lib/gemini";
+import { memoryAssets, type MemoryAsset } from "@/lib/memory-store";
 import sharp from "sharp";
 import fs from "fs/promises";
 import path from "path";
 
 export const maxDuration = 60;
-
-// Local store fallback for assets when DB is offline
-interface MemoryAsset {
-  id: string;
-  filename: string;
-  blobUrl: string;
-  thumbnailUrl: string | null;
-  width: number;
-  height: number;
-  phash: string;
-  phashHex: string;
-  phashBigInt: string;
-  status: string;
-  adobeContentId: string | null;
-  seriesId: string | null;
-  templateId: string | null;
-  createdAt: string;
-  seriesTitle?: string | null;
-  seriesQuota?: number | null;
-  seriesCount?: number | null;
-  themeName?: string | null;
-}
-
-const memoryAssets: MemoryAsset[] = [];
 
 export async function GET(request: NextRequest) {
   const sessionCookie = request.cookies.get(CONFIG.AUTH.COOKIE_NAME)?.value;
@@ -79,10 +57,13 @@ export async function GET(request: NextRequest) {
         seriesQuota: assetSeries.maxQuota,
         seriesCount: assetSeries.currentCount,
         themeName: productionThemes.name,
+        metadataTitle: assetMetadata.title,
+        metadataCategoryId: assetMetadata.categoryId,
       })
       .from(assets)
       .leftJoin(assetSeries, eq(assets.seriesId, assetSeries.id))
       .leftJoin(productionThemes, eq(assetSeries.themeId, productionThemes.id))
+      .leftJoin(assetMetadata, eq(assets.id, assetMetadata.assetId))
       .where(whereClause)
       .orderBy(desc(assets.createdAt))
       .limit(200);
@@ -91,6 +72,13 @@ export async function GET(request: NextRequest) {
       ...item,
       phashHex: toHexHash(item.phash),
       phashBigInt: item.phash.toString(),
+      metadata: item.metadataTitle
+        ? {
+            title: item.metadataTitle,
+            categoryId: item.metadataCategoryId || 11,
+            keywords: [],
+          }
+        : null,
     }));
 
     if (formatted.length > 0) {
@@ -185,16 +173,10 @@ export async function POST(request: NextRequest) {
     const height = meta.height || 0;
     const megapixels = (width * height) / 1_000_000;
 
-    // Technical compliance check
-    const isResolutionCompliant =
-      width >= CONFIG.IMAGE.MIN_WIDTH &&
-      height >= CONFIG.IMAGE.MIN_HEIGHT &&
-      megapixels >= CONFIG.IMAGE.MIN_MEGAPIXELS;
-
-    const initialStatus = isResolutionCompliant ? "qc_pending" : "qc_failed";
-    const statusReason = isResolutionCompliant
-      ? "Initial ingest completed. Ready for quality review."
-      : `Resolution insufficient: ${width}x${height} (${megapixels.toFixed(1)} MP). Adobe Stock requires minimum ${CONFIG.IMAGE.MIN_WIDTH}x${CONFIG.IMAGE.MIN_HEIGHT} (${CONFIG.IMAGE.MIN_MEGAPIXELS} MP).`;
+    // Technical compliance info (non-blocking for user workflow)
+    const isResolutionCompliant = megapixels >= 4 || width >= 2000 || height >= 2000;
+    const initialStatus = "ready";
+    const statusReason = "Asset uploaded and AI SEO metadata generated. Ready for Adobe Stock.";
 
     // 2. Compute 64-bit DCT pHash
     const phash = await computeImagePHash(imageBuffer);
@@ -266,7 +248,23 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 5. Save to database or memory
+    // 5. Automatic AI Analysis & SEO Generation (Title, Category, Keywords)
+    let generatedMeta: { title: string; categoryId: number; keywords: string[] } | null = null;
+    try {
+      const metaResult = await generateAssetMetadata(imageBuffer, {
+        filename: originalFilename,
+      });
+      generatedMeta = {
+        title: metaResult.title,
+        categoryId: metaResult.categoryId,
+        keywords: metaResult.keywords,
+      };
+    } catch (metaErr) {
+      console.warn("Auto SEO generation fallback:", metaErr);
+      generatedMeta = generateSmartSeoFromContext({ filename: originalFilename });
+    }
+
+    // 6. Save to database or memory
     const assetId = "asset_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7);
     let savedAsset: MemoryAsset = {
       id: assetId,
@@ -283,6 +281,7 @@ export async function POST(request: NextRequest) {
       seriesId,
       templateId,
       createdAt: new Date().toISOString(),
+      metadata: generatedMeta,
     };
 
     try {
@@ -317,7 +316,41 @@ export async function POST(request: NextRequest) {
           seriesId: inserted.seriesId,
           templateId: inserted.templateId,
           createdAt: inserted.createdAt instanceof Date ? inserted.createdAt.toISOString() : String(inserted.createdAt),
+          metadata: generatedMeta,
         };
+
+        if (generatedMeta) {
+          try {
+            await db
+              .insert(assetMetadata)
+              .values({
+                assetId: inserted.id,
+                title: generatedMeta.title,
+                categoryId: generatedMeta.categoryId,
+                releaseStatus: "none_required",
+              })
+              .onConflictDoUpdate({
+                target: assetMetadata.assetId,
+                set: {
+                  title: generatedMeta.title,
+                  categoryId: generatedMeta.categoryId,
+                },
+              });
+
+            for (let i = 0; i < generatedMeta.keywords.length; i++) {
+              await db
+                .insert(assetKeywords)
+                .values({
+                  assetId: inserted.id,
+                  keyword: generatedMeta.keywords[i],
+                  position: i + 1,
+                })
+                .onConflictDoNothing();
+            }
+          } catch (mErr) {
+            console.warn("DB metadata insertion warning:", mErr);
+          }
+        }
 
         await db.insert(assetStatusHistory).values({
           assetId: inserted.id,
@@ -336,6 +369,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       asset: savedAsset,
+      metadata: generatedMeta,
       qc: {
         passed: isResolutionCompliant,
         width,

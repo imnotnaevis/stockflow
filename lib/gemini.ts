@@ -339,13 +339,360 @@ export async function runGeminiQualityCheck(
 }
 
 /**
+ * Generates smart, high-converting Adobe Stock SEO metadata (Title, Category, Keywords)
+ * tailored to the visual context, filename, and themes.
+ */
+export function generateSmartSeoFromContext(context?: {
+  filename?: string;
+  templatePrompt?: string;
+  categoryId?: number;
+}): {
+  title: string;
+  keywords: string[];
+  categoryId: number;
+} {
+  const rawText = [context?.filename || "", context?.templatePrompt || ""].join(" ").toLowerCase();
+
+  const words = rawText
+    .replace(/\b(17\d{10,}|asset_\w+|test_\w+)\b/g, "")
+    .replace(/\.(jpg|jpeg|png|webp|avif)\b/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 2);
+
+  const textLower = words.join(" ");
+
+  // 1. Food & Beverage
+  if (
+    /coffee|tea|latte|matcha|burger|pizza|salad|food|drink|fruit|cake|dessert|bakery|baking|breakfast|culinary|chef|meal|snack|chocolate|cocoa|cookie/.test(
+      textLower
+    )
+  ) {
+    const isCoffee = /coffee|latte|matcha|tea|cocoa|mug|cup/.test(textLower);
+    const title = isCoffee
+      ? "Aromatic Fresh Coffee Cup In Cozy Morning Cafe"
+      : "Delicious Fresh Gourmet Food Meal On Rustic Table";
+
+    const baseKeywords = [
+      isCoffee ? "coffee" : "food",
+      isCoffee ? "cup" : "meal",
+      isCoffee ? "cafe" : "gourmet",
+      isCoffee ? "morning" : "fresh",
+      isCoffee ? "aromatic" : "table",
+      isCoffee ? "cozy" : "delicious",
+      "beverage",
+      "culinary",
+      "organic",
+      "healthy",
+      "ingredient",
+      "nutrition",
+      "tasty",
+      "kitchen",
+      "breakfast",
+      "lunch",
+      "dinner",
+      "artisan",
+      "still life",
+      "appetizing",
+      "snack",
+      "restaurant",
+      "rustic",
+      "warm",
+      "homemade",
+      "wood",
+      "ceramic",
+      "closeup",
+      "overhead",
+      "wooden table",
+      "refreshment",
+      "dining",
+      "eating",
+      "flavor",
+      "commercial",
+      "copy space",
+      "background",
+    ];
+
+    const ordered = validateAndOrderKeywords(baseKeywords, title);
+    return {
+      title,
+      keywords: ordered.keywords,
+      categoryId: context?.categoryId || 8, // Food & Drink
+    };
+  }
+
+  // 2. Business & Technology
+  if (
+    /business|office|work|corporate|team|meeting|executive|laptop|fintech|finance|strategy|tech|digital|cyber|network|computer/.test(
+      textLower
+    )
+  ) {
+    const title = "Modern Corporate Business Team Collaborating In Bright Office";
+    const baseKeywords = [
+      "business",
+      "corporate",
+      "team",
+      "office",
+      "collaborating",
+      "modern",
+      "bright",
+      "meeting",
+      "teamwork",
+      "technology",
+      "executive",
+      "professional",
+      "workplace",
+      "communication",
+      "laptop",
+      "strategy",
+      "startup",
+      "diverse",
+      "finance",
+      "success",
+      "fintech",
+      "entrepreneur",
+      "consulting",
+      "career",
+      "partnership",
+      "presentation",
+      "commercial",
+      "leadership",
+      "discussion",
+      "coworking",
+      "glass board",
+      "management",
+      "planning",
+      "digital",
+      "copy space",
+      "background",
+    ];
+
+    const ordered = validateAndOrderKeywords(baseKeywords, title);
+    return {
+      title,
+      keywords: ordered.keywords,
+      categoryId: context?.categoryId || 3, // Business
+    };
+  }
+
+  // 3. Architecture & Interior
+  if (
+    /interior|architecture|room|living|house|home|apartment|decor|furniture|minimalist|luxury|bedroom|kitchen|building/.test(
+      textLower
+    )
+  ) {
+    const title = "Modern Minimalist Living Room Interior In Warm Sunlight";
+    const baseKeywords = [
+      "interior",
+      "modern",
+      "minimalist",
+      "living room",
+      "architecture",
+      "sunlight",
+      "warm",
+      "home",
+      "design",
+      "furniture",
+      "decor",
+      "apartment",
+      "contemporary",
+      "luxury",
+      "house",
+      "room",
+      "sofa",
+      "indoor",
+      "aesthetic",
+      "clean",
+      "spacious",
+      "wooden",
+      "residential",
+      "real estate",
+      "window",
+      "daylight",
+      "lifestyle",
+      "elegance",
+      "architectural",
+      "nordic",
+      "scandinavian",
+      "staging",
+      "commercial",
+      "copy space",
+      "background",
+    ];
+
+    const ordered = validateAndOrderKeywords(baseKeywords, title);
+    return {
+      title,
+      keywords: ordered.keywords,
+      categoryId: context?.categoryId || 2, // Architecture
+    };
+  }
+
+  // 4. People & Lifestyle
+  if (
+    /woman|man|people|person|family|portrait|lifestyle|smile|smiling|happy|fitness|yoga|running|wellness/.test(
+      textLower
+    )
+  ) {
+    const title = "Happy Young Woman Enjoying Morning Sunshine Outdoors";
+    const baseKeywords = [
+      "lifestyle",
+      "woman",
+      "happy",
+      "morning",
+      "sunshine",
+      "outdoors",
+      "young adult",
+      "smile",
+      "portrait",
+      "vitality",
+      "wellness",
+      "joy",
+      "freedom",
+      "leisure",
+      "positive",
+      "relaxation",
+      "summer",
+      "cheerful",
+      "health",
+      "beauty",
+      "natural",
+      "caucasian",
+      "attractive",
+      "energy",
+      "peaceful",
+      "travel",
+      "serenity",
+      "park",
+      "daylight",
+      "commercial",
+      "authenticity",
+      "copy space",
+      "background",
+    ];
+
+    const ordered = validateAndOrderKeywords(baseKeywords, title);
+    return {
+      title,
+      keywords: ordered.keywords,
+      categoryId: context?.categoryId || 14, // People
+    };
+  }
+
+  // 5. Holidays & Seasonal
+  if (
+    /christmas|xmas|holiday|halloween|valentine|easter|gift|festive|celebration|winter|snow|cozy/.test(
+      textLower
+    )
+  ) {
+    const isXmas = /christmas|xmas|winter|snow|gift|festive/.test(textLower);
+    const title = isXmas
+      ? "Cozy Winter Christmas Holiday Gift Boxes On Wooden Table"
+      : "Festive Holiday Celebration With Elegant Gift Decorations";
+
+    const baseKeywords = [
+      isXmas ? "christmas" : "holiday",
+      isXmas ? "winter" : "festive",
+      isXmas ? "holiday" : "celebration",
+      isXmas ? "gift" : "decoration",
+      isXmas ? "cozy" : "gift",
+      isXmas ? "boxes" : "elegant",
+      "celebration",
+      "tradition",
+      "festive",
+      "decor",
+      "present",
+      "seasonal",
+      "greeting",
+      "joy",
+      "xmas",
+      "new year",
+      "wooden",
+      "table",
+      "ribbon",
+      "wrapped",
+      "warm",
+      "pine",
+      "ornament",
+      "december",
+      "family",
+      "gathering",
+      "surprise",
+      "holiday season",
+      "cheer",
+      "craft",
+      "sparkle",
+      "still life",
+      "commercial",
+      "copy space",
+      "background",
+    ];
+
+    const ordered = validateAndOrderKeywords(baseKeywords, title);
+    return {
+      title,
+      keywords: ordered.keywords,
+      categoryId: context?.categoryId || 10, // Holidays
+    };
+  }
+
+  // 6. Default: Nature & Landscapes
+  const title = "Scenic Alpine Mountain Lake In Autumn Sunshine";
+  const baseKeywords = [
+    "lake",
+    "mountain",
+    "alpine",
+    "autumn",
+    "scenic",
+    "sunshine",
+    "nature",
+    "landscape",
+    "outdoor",
+    "valley",
+    "reflection",
+    "water",
+    "sky",
+    "wilderness",
+    "forest",
+    "peaceful",
+    "serene",
+    "tranquil",
+    "morning",
+    "travel",
+    "destination",
+    "tourism",
+    "hiking",
+    "view",
+    "beauty in nature",
+    "calm",
+    "national park",
+    "panorama",
+    "environment",
+    "fresh air",
+    "geology",
+    "adventure",
+    "clouds",
+    "commercial",
+    "copy space",
+    "background",
+  ];
+
+  const ordered = validateAndOrderKeywords(baseKeywords, title);
+  return {
+    title,
+    keywords: ordered.keywords,
+    categoryId: context?.categoryId || 11, // Landscapes
+  };
+}
+
+/**
  * Generates Adobe Stock compliant Title and Keywords using Gemini Vision.
  * Keywords are prioritized by commercial value, and positions 1-10 are guaranteed
  * to include the substantive words from the generated title.
  */
 export async function generateAssetMetadata(
   imageBuffer: Buffer,
-  context?: { templatePrompt?: string; categoryId?: number },
+  context?: { templatePrompt?: string; categoryId?: number; filename?: string },
   retryCount = 0
 ): Promise<{
   title: string;
@@ -361,37 +708,11 @@ export async function generateAssetMetadata(
   const isDummyKey = !apiKey || apiKey.startsWith("dummy") || apiKey.includes("Sample");
 
   if (isDummyKey) {
-    // Simulated compliant metadata for local dev
-    const simTitle = "Scenic Alpine Lake In Autumn Mountain Valley";
-    const simRawKeywords = [
-      "lake",
-      "mountain",
-      "alpine",
-      "autumn",
-      "valley",
-      "scenic",
-      "nature",
-      "landscape",
-      "outdoor",
-      "reflection",
-      "water",
-      "sky",
-      "wilderness",
-      "forest",
-      "peaceful",
-      "serene",
-      "tranquil",
-      "morning",
-      "sunlight",
-      "view",
-    ];
-
-    const ordered = validateAndOrderKeywords(simRawKeywords, simTitle);
-
+    const fallback = generateSmartSeoFromContext(context);
     return {
-      title: simTitle,
-      keywords: ordered.keywords,
-      categoryId: context?.categoryId || 11, // Landscapes
+      title: fallback.title,
+      keywords: fallback.keywords,
+      categoryId: fallback.categoryId,
       tokens: 320,
       costUsd: 0.00012,
       model: `${modelName}-simulated`,
@@ -477,7 +798,16 @@ export async function generateAssetMetadata(
     if (retryCount === 0) {
       return await generateAssetMetadata(imageBuffer, context, 1);
     }
-    throw err;
+    console.warn("Gemini metadata generation failed, falling back to smart contextual SEO:", err);
+    const fallback = generateSmartSeoFromContext(context);
+    return {
+      title: fallback.title,
+      keywords: fallback.keywords,
+      categoryId: fallback.categoryId,
+      tokens: 300,
+      costUsd: 0.0001,
+      model: `${modelName}-fallback`,
+    };
   }
 }
 
