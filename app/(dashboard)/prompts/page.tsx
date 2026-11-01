@@ -15,6 +15,13 @@ import {
   Search,
   X,
   Gauge,
+  Bot,
+  ShieldCheck,
+  Tag,
+  Wand2,
+  Camera,
+  Calendar,
+  CheckCircle2,
 } from "lucide-react";
 import type { PromptTemplateRecord, SeriesRecord, ThemeRecord } from "@/lib/store";
 
@@ -24,8 +31,197 @@ interface SeriesWithUsage extends SeriesRecord {
   isOverQuota: boolean;
 }
 
+interface GeminiAgentPrompt {
+  id: string;
+  name: string;
+  role: string;
+  icon: React.ComponentType<{ className?: string }>;
+  accentColor: string;
+  badgeBg: string;
+  badgeText: string;
+  model: string;
+  temperature: string;
+  purpose: string;
+  systemInstruction: string;
+  userPromptTemplate: string;
+  outputFormat: string;
+  exampleUse: string;
+}
+
+const GEMINI_AGENTS_LIBRARY: GeminiAgentPrompt[] = [
+  {
+    id: "agent-qc-inspector",
+    name: "Gemini Vision Quality Inspector",
+    role: "Adobe Stock QC & IP Moderation Gatekeeper",
+    icon: ShieldCheck,
+    accentColor: "border-pastel-lavenderDeep/40",
+    badgeBg: "bg-pastel-lavender/60 border-pastel-lavender",
+    badgeText: "text-pastel-lavenderDeep",
+    model: "gemini-1.5-flash or gemini-2.0-flash",
+    temperature: "0.0 (Strict / Deterministic)",
+    purpose:
+      "Performs automated optical inspection of generative images: scores sharpness (0-100), detects AI morphological distortions (extra fingers, asymmetrical eyes, melted textures), measures usable copy-space percentage, and flags intellectual property / brand trademark violations.",
+    systemInstruction: `You are an elite Adobe Stock quality control inspection inspector.
+Evaluate the stock photograph/illustration strictly against Adobe Stock technical and commercial review guidelines:
+1. Sharpness: Evaluate focus, micro-contrast, edge sharpness (0 to 100). Stock requires sharp focus on the main subject.
+2. Artifacts: Look for AI generation distortions (morphed fingers, asymmetric eyes, weird melted textures), sensor noise, color banding, edge halos, or over-sharpening halos.
+3. Copy Space: Stock buyers need empty/uncluttered space to overlay typography or graphics.
+4. IP Risk: Strict zero-tolerance for recognizable logos (Apple, Nike, BMW, etc.), trademarks, protected character designs, or non-incidental private property.
+5. Overall Pass: Set to true ONLY if image has NO severe artifacts, NO medium/high IP risk, and adequate technical clarity for Adobe Stock buyers.`,
+    userPromptTemplate: `Analyze the attached stock image against Adobe Stock commercial guidelines and output strict JSON:
+{
+  "sharpness": 88,
+  "artifacts": [
+    { "type": "slight compression", "location": "corners", "severity": "low" }
+  ],
+  "copy_space": {
+    "usable": true,
+    "percent": 35,
+    "position": "upper right quadrant"
+  },
+  "ip_risk": {
+    "level": "low",
+    "reasons": []
+  },
+  "overall_pass": true,
+  "short_reasons": [
+    "Tack sharp focal plane on main subject.",
+    "Zero commercial logos or recognizable trademarks.",
+    "Clean copy space suitable for marketing typography."
+  ]
+}`,
+    outputFormat: "Structured JSON conforming to Gemini Quality Schema",
+    exampleUse: "Automatically triggered on image upload or via 'Run QC Inspection' button.",
+  },
+  {
+    id: "agent-seo-metadata",
+    name: "Adobe Stock SEO & Metadata Specialist",
+    role: "Commercial Title & Keywords Ranking Architect",
+    icon: Tag,
+    accentColor: "border-pastel-blueDeep/40",
+    badgeBg: "bg-pastel-blue/60 border-pastel-blue",
+    badgeText: "text-pastel-blueDeep",
+    model: "gemini-1.5-flash",
+    temperature: "0.0 (Deterministic Ranking)",
+    purpose:
+      "Generates commercial titles (maximum 70 characters, no commas, zero AI buzzwords) and 15–35 buyer search keywords ranked by purchase intent. Enforces Adobe's critical rule: positions 1 to 10 must contain substantive title words.",
+    systemInstruction: `You are a master Adobe Stock SEO metadata specialist.
+Generate commercial stock metadata strictly adhering to Adobe guidelines:
+1. Title: Descriptive, literal, commercial. MAXIMUM 70 CHARACTERS. DO NOT USE COMMAS IN THE TITLE.
+2. Never mention "AI", "generative AI", model names, prompts, or software platforms.
+3. Keywords: 20 to 30 highly relevant search tags ordered strictly by commercial buyer intent.
+4. CRITICAL RULE: Positions 1 to 10 of the keywords MUST contain the substantive key words from your title.
+5. Category: Choose the single best Adobe Stock category ID from 1 to 21.`,
+    userPromptTemplate: `Analyze this image concept and generate compliant commercial stock metadata in JSON:
+{
+  "title": "Scenic Alpine Lake In Autumn Mountain Valley",
+  "keywords": [
+    "lake", "mountain", "alpine", "autumn", "valley",
+    "scenic", "nature", "landscape", "outdoor", "reflection",
+    "water", "sky", "wilderness", "forest", "peaceful",
+    "serene", "tranquil", "morning", "sunlight", "view"
+  ],
+  "categoryId": 11
+}`,
+    outputFormat: "JSON containing title, keywords array, categoryId",
+    exampleUse: "Triggered in Right Drawer via 'Generate with Gemini'.",
+  },
+  {
+    id: "agent-prompt-advisor",
+    name: "AI Prompt Advisor & Rejection Solver",
+    role: "Moderation Diagnostics & Prompt Optimizer",
+    icon: Wand2,
+    accentColor: "border-pastel-yellowDeep/40",
+    badgeBg: "bg-pastel-yellow/60 border-pastel-yellow",
+    badgeText: "text-pastel-yellowDeep",
+    model: "gemini-1.5-pro (Deep Reasoning)",
+    temperature: "0.2 (Focused Creative Advice)",
+    purpose:
+      "Analyzes rejection logs (SIMILAR_CONTENT, TECHNICAL_ISSUES, INTELLECTUAL_PROPERTY), diagnoses the visual failure mode, and generates an optimized prompt version with fortified optical terms and negative prompt constraints.",
+    systemInstruction: `You are a veteran Adobe Stock contributor and generative AI prompt engineer.
+Your task is to analyze why an AI-generated stock image was rejected by Adobe Stock moderation, and rewrite the prompt to guarantee high commercial licensability.
+
+When addressing:
+- TECHNICAL_ISSUES: Add optical sharpness constraints ("tack sharp focal plane, clean 8k resolution, natural depth of field, 85mm f/2.8 lens, ISO 100") and fortify negative prompt against blur, noise, chromatic aberration, and melted textures.
+- SIMILAR_CONTENT: Differentiate subject angles, unique environmental styling, distinct color palettes, and alternative composition to avoid repetitive generative series spam.
+- INTELLECTUAL_PROPERTY: Remove all branded silhouettes, proprietary automotive grills, copyrighted logos, and trademarked architecture. Replace with generic, bespoke minimalist design.`,
+    userPromptTemplate: `Base Prompt: "[INPUT_PROMPT]"
+Rejection Code: [TAXONOMY_CODE e.g. SIMILAR_CONTENT or TECHNICAL_ISSUES]
+Moderator Notes: [REJECTION_REASONS]
+
+Output improved prompt, negative prompt, and rationale:
+{
+  "improvedPrompt": "...",
+  "improvedNegativePrompt": "...",
+  "rationale": "...",
+  "versionNote": "..."
+}`,
+    outputFormat: "JSON with improvedPrompt, improvedNegativePrompt, and rationale",
+    exampleUse: "Triggered on Rejections page or Prompts page via 'Prompt Advisor'.",
+  },
+  {
+    id: "agent-commercial-concept",
+    name: "Commercial Stock Photography Prompt Architect",
+    role: "Midjourney, Flux & Imagen Visual Concept Director",
+    icon: Camera,
+    accentColor: "border-pastel-sageDeep/40",
+    badgeBg: "bg-pastel-sage/60 border-pastel-sage",
+    badgeText: "text-pastel-sageDeep",
+    model: "gemini-1.5-pro or gemini-2.5-flash",
+    temperature: "0.7 (Creative & Diverse)",
+    purpose:
+      "Generates hyper-realistic commercial stock photography prompts tailored for Midjourney v6.1, Flux.1, and Google Imagen 3. Formulates precise studio lighting, lens selection, candid human emotion, intentional negative copy space, and clean negative prompts.",
+    systemInstruction: `You are a world-class Commercial Stock Photography Art Director specializing in creating high-earning prompts for Midjourney v6.1, Flux.1, and Google Imagen 3.
+
+Guidelines for Maximum Adobe Stock Licensing:
+1. Composition: Apply rule of thirds with intentional negative copy space (left or right third) for designers to place ad typography.
+2. Lighting: Specify realistic commercial lighting setups (e.g. "diffuse Profoto softbox lighting, gentle Rembrandt rim light, golden hour natural backlight").
+3. Camera & Optics: Specify professional medium format camera aesthetics (e.g. "shot on Hasselblad H6D-100c, 85mm prime lens, f/2.8, ISO 64, crisp micro-contrast, zero sensor noise").
+4. Human Subjects: Direct authentic candid emotion, natural skin micro-texture with pores (no plastic/waxy AI skin), diverse representation, professional attire without brand logos.
+5. Format: Output clean prompt text + negative prompt + recommended aspect ratio (--ar 16:9 or --ar 4:3).`,
+    userPromptTemplate: `Generate 3 commercial stock photo concepts for [NICHE / THEME, e.g. "Sustainable Energy Engineering Team"]:
+
+For each concept specify:
+1. Concept Title & Commercial Buyer Use Case
+2. Exact AI Prompt (Lighting, Camera, Subject, Setting, Copy-Space, Aspect Ratio)
+3. Fortified Negative Prompt
+4. Recommended Adobe Stock Category`,
+    outputFormat: "Structured concept briefs with ready-to-paste generative AI prompts",
+    exampleUse: "Use to feed Midjourney / Flux to generate clean, high-selling commercial assets.",
+  },
+  {
+    id: "agent-seasonal-strategist",
+    name: "Adobe Stock Seasonal Trend Strategist",
+    role: "Quarterly H-90 Holiday Window Planner",
+    icon: Calendar,
+    accentColor: "border-pastel-peachDeep/40",
+    badgeBg: "bg-pastel-peach/60 border-pastel-peach",
+    badgeText: "text-pastel-peachDeep",
+    model: "gemini-1.5-flash",
+    temperature: "0.3 (Strategic Analysis)",
+    purpose:
+      "Analyzes calendar quarters and upcoming holidays to identify H-90 buyer surge windows. Recommends top-converting visual themes, prop checklists, and color palettes 30 to 90 days before holidays occur.",
+    systemInstruction: `You are an Adobe Stock Contributor Campaign Strategist.
+Given a target holiday or quarter (H-90 buying window):
+1. Identify the top 5 high-demand commercial niches buyers are searching for 30-90 days before the event.
+2. Outline specific props, color palettes, and models needed.
+3. Formulate the exact visual concepts that avoid over-saturated stock clichés.
+4. Provide negative copy-space placement recommendations for hero banner usage.`,
+    userPromptTemplate: `Target Window: [QUARTER OR HOLIDAY, e.g. "Q4 Holiday & Black Friday Shopping Surge"]
+
+Generate a strategic production blueprint:
+1. Top 5 High-Demand Visual Sub-Niches
+2. Prop & Color Palette Checklist
+3. 3 Ready-to-Generate Commercial Prompts with Copy-Space
+4. Submission Deadline Timeline (H-90 to H-30)`,
+    outputFormat: "Strategic production blueprint and action timeline",
+    exampleUse: "Use to plan weekly batch uploads aligned with Adobe Stock buyer cycles.",
+  },
+];
+
 export default function PromptsAndSeriesPage() {
-  const [activeTab, setActiveTab] = useState<"prompts" | "series">("prompts");
+  const [activeTab, setActiveTab] = useState<"gemini_agents" | "prompts" | "series">("gemini_agents");
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   // Prompts State
   const [prompts, setPrompts] = useState<PromptTemplateRecord[]>([]);
@@ -60,6 +256,12 @@ export default function PromptsAndSeriesPage() {
   const [sDescription, setSDescription] = useState("");
   const [submittingSeries, setSubmittingSeries] = useState(false);
   const [seriesError, setSeriesError] = useState("");
+
+  const copyAgentText = (key: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedKey(key);
+    setTimeout(() => setCopiedKey(null), 2000);
+  };
 
   const loadPrompts = async () => {
     try {
@@ -309,7 +511,19 @@ export default function PromptsAndSeriesPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          onClick={() => setActiveTab("gemini_agents")}
+          className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold shadow-pill transition-all cursor-pointer ${
+            activeTab === "gemini_agents"
+              ? "bg-charcoal-900 text-white"
+              : "bg-white border border-base-border text-charcoal-muted hover:text-charcoal-900 hover:bg-base-cardWarm"
+          }`}
+        >
+          <Bot className="h-3.5 w-3.5 text-pastel-lavender" />
+          <span>Gemini AI Agents Suite (5)</span>
+        </button>
+
         <button
           onClick={() => setActiveTab("prompts")}
           className={`flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold shadow-pill transition-all cursor-pointer ${
@@ -318,7 +532,7 @@ export default function PromptsAndSeriesPage() {
               : "bg-white border border-base-border text-charcoal-muted hover:text-charcoal-900 hover:bg-base-cardWarm"
           }`}
         >
-          <Sparkles className="h-3.5 w-3.5" />
+          <Sparkles className="h-3.5 w-3.5 text-pastel-yellowDeep" />
           <span>Prompt Templates ({prompts.length})</span>
         </button>
 
@@ -330,10 +544,160 @@ export default function PromptsAndSeriesPage() {
               : "bg-white border border-base-border text-charcoal-muted hover:text-charcoal-900 hover:bg-base-cardWarm"
           }`}
         >
-          <Gauge className="h-3.5 w-3.5" />
-          <span>Series &amp; Quota Meters ({seriesList.length})</span>
+          <Gauge className="h-3.5 w-3.5 text-pastel-blueDeep" />
+          <span>Series &amp; Quotas ({seriesList.length})</span>
         </button>
       </div>
+
+      {/* ================= TAB 0: GEMINI AI AGENTS SUITE ================= */}
+      {activeTab === "gemini_agents" && (
+        <div className="space-y-6">
+          {/* Banner */}
+          <div className="rounded-3xl border border-base-border bg-gradient-to-r from-pastel-lavender/30 via-pastel-blue/20 to-pastel-yellow/20 p-6 shadow-soft">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Bot className="h-5 w-5 text-charcoal-900" />
+                  <h2 className="text-base font-bold text-charcoal-900">
+                    Google Gemini Commercial AI Agents Suite
+                  </h2>
+                </div>
+                <p className="text-xs text-charcoal-muted max-w-2xl leading-relaxed">
+                  Production-grade prompts engineered specifically to satisfy Adobe Stock&apos;s strict commercial moderation, metadata ranking algorithms, and buyer license demand. Copy any prompt directly to Google AI Studio or use them in your generation pipeline.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono px-3 py-1.5 rounded-full bg-white border border-base-border text-charcoal-900 font-semibold shadow-pill">
+                  5 Specialized Agents
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Agents List */}
+          <div className="grid grid-cols-1 gap-6">
+            {GEMINI_AGENTS_LIBRARY.map((agent) => {
+              const Icon = agent.icon;
+              const isSysCopied = copiedKey === `${agent.id}-sys`;
+              const isUserCopied = copiedKey === `${agent.id}-usr`;
+
+              return (
+                <div
+                  key={agent.id}
+                  className="rounded-3xl border border-base-border bg-white p-6 shadow-soft hover:shadow-softHover transition-all space-y-5"
+                >
+                  {/* Top Bar */}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-base-border pb-4">
+                    <div className="flex items-start gap-3.5">
+                      <div className="w-11 h-11 rounded-2xl bg-base-bg border border-base-border flex items-center justify-center flex-shrink-0 shadow-sm text-charcoal-900">
+                        <Icon className="w-5 h-5 text-charcoal-900" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="text-base font-bold text-charcoal-900">
+                            {agent.name}
+                          </h3>
+                          <span
+                            className={`px-3 py-0.5 rounded-full text-[11px] font-bold border ${agent.badgeBg} ${agent.badgeText}`}
+                          >
+                            {agent.role}
+                          </span>
+                        </div>
+                        <p className="text-xs text-charcoal-muted mt-1 leading-relaxed max-w-3xl">
+                          {agent.purpose}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col sm:items-end gap-1 flex-shrink-0 text-xs">
+                      <span className="font-mono text-charcoal-900 font-semibold bg-base-bg px-2.5 py-1 rounded-full border border-base-border">
+                        {agent.model}
+                      </span>
+                      <span className="text-[11px] text-charcoal-muted">
+                        Temp: {agent.temperature}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Prompts Section */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                    {/* System Instruction */}
+                    <div className="space-y-2 flex flex-col justify-between rounded-2xl border border-base-border bg-base-bg/60 p-4">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-bold uppercase tracking-wider text-charcoal-900 flex items-center gap-1.5">
+                            <Terminal className="h-3.5 w-3.5 text-charcoal-muted" />
+                            <span>System Instruction (Agent Persona)</span>
+                          </span>
+                          <button
+                            onClick={() => copyAgentText(`${agent.id}-sys`, agent.systemInstruction)}
+                            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-white border border-base-border hover:bg-base-cardWarm text-charcoal-900 transition-all cursor-pointer shadow-xs"
+                          >
+                            {isSysCopied ? (
+                              <>
+                                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                                <span className="text-emerald-700 font-bold">Copied!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="h-3.5 w-3.5" />
+                                <span>Copy System Prompt</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                        <pre className="text-xs font-mono text-charcoal-700 bg-white p-3.5 rounded-xl border border-base-border whitespace-pre-wrap leading-relaxed max-h-56 overflow-y-auto select-all">
+                          {agent.systemInstruction}
+                        </pre>
+                      </div>
+
+                      <div className="pt-2 text-[11px] text-charcoal-muted flex items-center justify-between">
+                        <span>Format: {agent.outputFormat}</span>
+                      </div>
+                    </div>
+
+                    {/* User Prompt Template */}
+                    <div className="space-y-2 flex flex-col justify-between rounded-2xl border border-base-border bg-base-bg/60 p-4">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-bold uppercase tracking-wider text-charcoal-900 flex items-center gap-1.5">
+                            <Sparkles className="h-3.5 w-3.5 text-charcoal-muted" />
+                            <span>User Prompt Template &amp; JSON Output</span>
+                          </span>
+                          <button
+                            onClick={() => copyAgentText(`${agent.id}-usr`, agent.userPromptTemplate)}
+                            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-white border border-base-border hover:bg-base-cardWarm text-charcoal-900 transition-all cursor-pointer shadow-xs"
+                          >
+                            {isUserCopied ? (
+                              <>
+                                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                                <span className="text-emerald-700 font-bold">Copied!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="h-3.5 w-3.5" />
+                                <span>Copy User Prompt</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                        <pre className="text-xs font-mono text-charcoal-700 bg-white p-3.5 rounded-xl border border-base-border whitespace-pre-wrap leading-relaxed max-h-56 overflow-y-auto select-all">
+                          {agent.userPromptTemplate}
+                        </pre>
+                      </div>
+
+                      <div className="pt-2 text-[11px] text-charcoal-muted flex items-center justify-between">
+                        <span>Workflow: {agent.exampleUse}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* ================= TAB 1: PROMPTS ================= */}
       {activeTab === "prompts" && (
