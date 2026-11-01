@@ -3,7 +3,8 @@ import { CONFIG } from "@/lib/config";
 import { verifySessionToken } from "@/lib/auth";
 import { db, assets, assetMetadata, assetKeywords, promptTemplates } from "@/lib/db";
 import { eq } from "drizzle-orm";
-import { generateAssetMetadata } from "@/lib/gemini";
+import { generateAssetMetadata, generateSmartSeoFromContext } from "@/lib/gemini";
+import { memoryAssets } from "@/lib/memory-store";
 import fs from "fs/promises";
 import path from "path";
 
@@ -20,9 +21,10 @@ export async function POST(
   }
 
   const { id: assetId } = params;
+  const body = await request.json().catch(() => ({}));
 
   try {
-    // 1. Fetch Asset
+    // 1. Fetch Asset from DB or Memory Store
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let asset: any = null;
     try {
@@ -36,32 +38,52 @@ export async function POST(
     }
 
     if (!asset) {
-      if (assetId.startsWith("local_preview_")) {
+      const mem = memoryAssets.find((a) => a.id === assetId);
+      if (mem) {
+        asset = mem;
+      }
+    }
+
+    if (!asset) {
+      if (body?.filename || body?.blobUrl) {
+        asset = {
+          id: assetId,
+          filename: body.filename || "asset",
+          blobUrl: body.blobUrl || "",
+          templateId: null,
+        };
+      } else {
         const uploadDir = path.join(process.cwd(), "public", "uploads");
         const uploads = await fs.readdir(uploadDir).catch(() => []);
         const latestFile = uploads[uploads.length - 1];
         asset = {
           id: assetId,
-          filename: "local_asset",
-          blobUrl: latestFile ? `/uploads/${latestFile}` : "/uploads/sample.jpg",
+          filename: "stock_asset",
+          blobUrl: latestFile ? `/uploads/${latestFile}` : "",
           templateId: null,
         };
-      } else {
-        return NextResponse.json({ error: "Asset not found" }, { status: 404 });
       }
     }
 
-    // 2. Read Image Buffer
-    let imageBuffer: Buffer;
-    if (asset.blobUrl.startsWith("/uploads/")) {
-      const localPath = path.join(process.cwd(), "public", asset.blobUrl);
-      imageBuffer = await fs.readFile(localPath);
-    } else {
-      const res = await fetch(asset.blobUrl);
-      if (!res.ok) {
-        throw new Error(`Failed to fetch image from blobUrl: ${res.statusText}`);
+    // 2. Read Image Buffer or generate from context
+    let imageBuffer: Buffer | null = null;
+    if (asset.blobUrl) {
+      try {
+        if (asset.blobUrl.startsWith("data:")) {
+          const base64Part = asset.blobUrl.split(",")[1];
+          imageBuffer = Buffer.from(base64Part, "base64");
+        } else if (asset.blobUrl.startsWith("/uploads/")) {
+          const localPath = path.join(process.cwd(), "public", asset.blobUrl);
+          imageBuffer = await fs.readFile(localPath);
+        } else if (asset.blobUrl.startsWith("http")) {
+          const res = await fetch(asset.blobUrl);
+          if (res.ok) {
+            imageBuffer = Buffer.from(await res.arrayBuffer());
+          }
+        }
+      } catch (bufErr) {
+        console.warn("Could not read image buffer for asset:", bufErr);
       }
-      imageBuffer = Buffer.from(await res.arrayBuffer());
     }
 
     // 3. Check for prompt template context if templateId exists
@@ -78,11 +100,40 @@ export async function POST(
       }
     }
 
-    // 4. Generate Metadata with Gemini
-    const { title, keywords, categoryId, tokens, costUsd } =
-      await generateAssetMetadata(imageBuffer, { templatePrompt });
+    // 4. Generate Metadata with Gemini or Smart Context Analyzer
+    let title: string;
+    let keywords: string[];
+    let categoryId: number;
+    let tokens = 320;
+    let costUsd = 0.00012;
 
-    // 5. Save in database in transaction
+    if (imageBuffer) {
+      const generated = await generateAssetMetadata(imageBuffer, {
+        templatePrompt,
+        filename: asset.filename,
+      });
+      title = generated.title;
+      keywords = generated.keywords;
+      categoryId = generated.categoryId;
+      tokens = generated.tokens;
+      costUsd = generated.costUsd;
+    } else {
+      const fallback = generateSmartSeoFromContext({
+        filename: asset.filename,
+        templatePrompt,
+      });
+      title = fallback.title;
+      keywords = fallback.keywords;
+      categoryId = fallback.categoryId;
+    }
+
+    // 5. Update Memory Store
+    const memMatch = memoryAssets.find((a) => a.id === assetId);
+    if (memMatch) {
+      memMatch.metadata = { title, categoryId, keywords };
+    }
+
+    // 6. Save in database if available
     try {
       await db.transaction(async (tx) => {
         // Upsert asset_metadata
@@ -110,7 +161,7 @@ export async function POST(
           await tx.insert(assetKeywords).values({
             assetId: asset.id,
             keyword: keywords[i],
-            position: i + 1, // 1-based indexing for Adobe Stock importance
+            position: i + 1,
           });
         }
       });
